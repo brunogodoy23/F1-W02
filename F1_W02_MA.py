@@ -6,7 +6,7 @@ import math
 import os
 # ---------------------------------------------------------------------------
 # W02 - 2011
-# Bruno da Silva Godoy 111392
+# Bruno da Silva Godoy - 111392
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -139,7 +139,7 @@ class F1Car:
         glColor3f(0.25, 0.25, 0.28);
         gluDisk(quad, 0, tire_radius, 30, 1)
 
-        # Parafusos (Agora desenhados direto na base, sem flutuar)
+        # Parafusos
         glColor3f(0.7, 0.7, 0.75);
         bolt_radius = 0.015;
         bolt_dist = hub_radius + 0.05
@@ -160,7 +160,7 @@ class F1Car:
         glColor3f(0.3, 0.3, 0.35);
         gluDisk(quad, 0, hub_radius + 0.02, 20, 1)
 
-        glPopMatrix()  # Fecha Parte Interna
+        glPopMatrix()
 
         # Parede externa
         glPushMatrix()
@@ -269,36 +269,59 @@ class F1Car:
         glVertex3f(-0.10, 0.125, -0.7)
         glEnd()
 
-    def draw_curved_sidepod(self):
+    def draw_curved_sidepod(self, side):
+        z_f = 0.75;
+        z_r = -0.8;
+        xif = 0.18;
+        xof = 0.52;
+        xir = 0.05;
+        xor = 0.35;
+        yb = 0.125;
+        yt = 0.35
         glBegin(GL_QUADS)
         # Topo
         glNormal3f(0, 1, 0);
         glColor3f(*self.body_color);
-        glVertex3f(0.18, 0.35, 0.75);
-        glVertex3f(0.52, 0.35, 0.75);
-        glVertex3f(0.35, 0.25, -0.8);
-        glVertex3f(0.05, 0.30, -0.8)
+        glVertex3f(xif, yt, z_f);
+        glVertex3f(xof, yt, z_f);
+        glVertex3f(xor, yt - 0.1, z_r);
+        glVertex3f(xir, yt - 0.05, z_r)
         # Lateral externa
         glNormal3f(1, 0, 0);
         glColor3f(0.65, 0.65, 0.65);
-        glVertex3f(0.52, 0.35, 0.75);
-        glVertex3f(0.52, 0.125, 0.75);
-        glVertex3f(0.35, 0.125, -0.8);
-        glVertex3f(0.35, 0.25, -0.8)
+        glVertex3f(xof, yt, z_f);
+        glVertex3f(xof, yb, z_f);
+        glVertex3f(xor, yb, z_r);
+        glVertex3f(xor, yt - 0.1, z_r)
         # Fundo
         glNormal3f(0, -1, 0);
         glColor3f(0.4, 0.4, 0.4);
-        glVertex3f(0.18, 0.125, 0.75);
-        glVertex3f(0.52, 0.125, 0.75);
-        glVertex3f(0.35, 0.125, -0.8);
-        glVertex3f(0.05, 0.125, -0.8)
+        glVertex3f(xif, yb, z_f);
+        glVertex3f(xof, yb, z_f);
+        glVertex3f(xor, yb, z_r);
+        glVertex3f(xir, yb, z_r)
         # Lateral interna
         glNormal3f(-1, 0, 0);
         glColor3f(0.65, 0.65, 0.65);
-        glVertex3f(0.05, 0.30, -0.8);
-        glVertex3f(0.35, 0.25, -0.8);
+        glVertex3f(xir, yt - 0.05, z_r);
+        glVertex3f(xor, yt - 0.1, z_r);
+        glVertex3f(xor, yb, z_r);
+        glVertex3f(xir, yb, z_r)
+        glEnd()
+
+        # Extensão Inferior
+        glColor3f(*self.body_color)
+        glBegin(GL_QUADS)
+        glNormal3f(1, 0, 0);
+        glVertex3f(0.52, 0.125, 0.75);
+        glVertex3f(0.52, 0.125, 0.75);
         glVertex3f(0.35, 0.125, -0.8);
-        glVertex3f(0.05, 0.125, -0.8)
+        glVertex3f(0.35, 0.125, -0.8)
+        glNormal3f(0, 0, 1);
+        glVertex3f(0.18, 0.125, 0.75);
+        glVertex3f(0.18, 0.125, 0.75);
+        glVertex3f(0.52, 0.125, 0.75);
+        glVertex3f(0.52, 0.125, 0.75)
         glEnd()
 
         # Faixa verde
@@ -311,35 +334,48 @@ class F1Car:
         glVertex3f(0.38, 0.26, -0.65)
         glEnd()
 
-        # Logo Petronas
+        # --- Logo Petronas
         if self.petronas_tex_id > 0:
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, self.petronas_tex_id)
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
             glColor3f(1.0, 1.0, 1.0)
+
             glBegin(GL_QUADS)
-            glNormal3f(1, 0, 0)
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(0.405, 0.06, -0.4)
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(0.485, 0.06, 0.25)
-            glTexCoord2f(1.0, 1.0);
-            glVertex3f(0.485, 0.29, 0.25)
-            glTexCoord2f(0.0, 1.0);
-            glVertex3f(0.405, 0.29, -0.4)
+            if side == 1:
+                glNormal3f(-1, 0, 0)
+                glTexCoord2f(1.0, 0.0);
+                glVertex3f(0.405, 0.06, -0.4)
+                glTexCoord2f(0.0, 0.0);
+                glVertex3f(0.485, 0.06, 0.25)
+                glTexCoord2f(0.0, 1.0);
+                glVertex3f(0.485, 0.29, 0.25)
+                glTexCoord2f(1.0, 1.0);
+                glVertex3f(0.405, 0.29, -0.4)
+            else:
+                glNormal3f(1, 0, 0)
+                glTexCoord2f(0.0, 0.0);
+                glVertex3f(0.405, 0.06, -0.4)
+                glTexCoord2f(1.0, 0.0);
+                glVertex3f(0.485, 0.06, 0.25)
+                glTexCoord2f(1.0, 1.0);
+                glVertex3f(0.485, 0.29, 0.25)
+                glTexCoord2f(0.0, 1.0);
+                glVertex3f(0.405, 0.29, -0.4)
             glEnd()
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D)
 
-        # Traseira Sidepod
-        glColor3f(0.65, 0.65, 0.65)
+        # Fechamentos traseiros
+        glColor3f(0.65, 0.65, 0.65);
+        z_back = 0.74
         glBegin(GL_QUADS)
         glNormal3f(0, 0, 1);
-        glVertex3f(0.18, 0.35, 0.74);
-        glVertex3f(0.52, 0.35, 0.74);
-        glVertex3f(0.52, 0.125, 0.74);
-        glVertex3f(0.18, 0.125, 0.74)
+        glVertex3f(0.18, 0.35, z_back);
+        glVertex3f(0.52, 0.35, z_back);
+        glVertex3f(0.52, 0.125, z_back);
+        glVertex3f(0.18, 0.125, z_back)
         glEnd()
         glColor3f(0.05, 0.05, 0.05)
         glBegin(GL_QUADS)
@@ -380,20 +416,6 @@ class F1Car:
         glVertex3f(-0.08, 0.25, -1.25)
         glEnd()
 
-        # Faixa Verde
-        glColor3f(0.0, 0.6, 0.55)
-        glBegin(GL_QUADS)
-        glNormal3f(1, 0, 0);
-        glVertex3f(0.252, 0.275, 0.05);
-        glVertex3f(0.252, 0.125, 0.05);
-        glVertex3f(0.082, 0.20, -1.25);
-        glVertex3f(0.082, 0.25, -1.25)
-        glNormal3f(-1, 0, 0);
-        glVertex3f(-0.252, 0.275, 0.05);
-        glVertex3f(-0.252, 0.125, 0.05);
-        glVertex3f(-0.082, 0.20, -1.25);
-        glVertex3f(-0.082, 0.25, -1.25)
-        glEnd()
 
         # Extensão Inferior
         glColor3f(*self.body_color)
@@ -521,11 +543,11 @@ class F1Car:
 
         # Câmeras
         glColor3f(0.1, 0.1, 0.1)
-        for x_pos in [-0.04, 0.04]:
-            glPushMatrix();
-            glTranslatef(x_pos, 0.08, 1.65);
-            glScalef(0.15, 0.2, 0.08);
-            self.draw_box(1, 1, 1);
+        for x_pos in [-0.05, 0.05]:
+            glPushMatrix()
+            glTranslatef(x_pos, 0.08, 1.65)
+            glScalef(0.04, 0.25, 0.15)
+            self.draw_box(1, 1, 1)
             glPopMatrix()
 
     def draw_gap_filler(self):
@@ -615,23 +637,23 @@ class F1Car:
                 glBegin(GL_QUADS)
                 if side == 1:
                     glNormal3f(1, 0, 0);
-                    glTexCoord2f(1, 0);
-                    glVertex3f(0.011, -0.075, 0.16);
                     glTexCoord2f(0, 0);
+                    glVertex3f(0.011, -0.075, 0.16);
+                    glTexCoord2f(1, 0);
                     glVertex3f(0.011, -0.075, -0.16);
-                    glTexCoord2f(0, 1);
-                    glVertex3f(0.011, 0.075, -0.16);
                     glTexCoord2f(1, 1);
+                    glVertex3f(0.011, 0.075, -0.16);
+                    glTexCoord2f(0, 1);
                     glVertex3f(0.011, 0.075, 0.16)
                 else:
                     glNormal3f(-1, 0, 0);
-                    glTexCoord2f(0, 0);
-                    glVertex3f(-0.011, -0.075, 0.16);
                     glTexCoord2f(1, 0);
-                    glVertex3f(-0.011, -0.075, -0.16);
-                    glTexCoord2f(1, 1);
-                    glVertex3f(-0.011, 0.075, -0.16);
+                    glVertex3f(-0.011, -0.075, 0.16)
+                    glTexCoord2f(0, 0);
+                    glVertex3f(-0.011, -0.075, -0.16)
                     glTexCoord2f(0, 1);
+                    glVertex3f(-0.011, 0.075, -0.16)
+                    glTexCoord2f(1, 1);
                     glVertex3f(-0.011, 0.075, 0.16)
                 glEnd()
 
@@ -642,23 +664,23 @@ class F1Car:
                 glBegin(GL_QUADS)
                 if side == 1:
                     glNormal3f(1, 0, 0);
-                    glTexCoord2f(1, 0);
-                    glVertex3f(0.011, -0.20, 0.08);
                     glTexCoord2f(0, 0);
+                    glVertex3f(0.011, -0.20, 0.08);
+                    glTexCoord2f(1, 0);
                     glVertex3f(0.011, -0.20, -0.08);
-                    glTexCoord2f(0, 1);
-                    glVertex3f(0.011, -0.08, -0.08);
                     glTexCoord2f(1, 1);
+                    glVertex3f(0.011, -0.08, -0.08);
+                    glTexCoord2f(0, 1);
                     glVertex3f(0.011, -0.08, 0.08)
                 else:
                     glNormal3f(-1, 0, 0);
-                    glTexCoord2f(0, 0);
-                    glVertex3f(-0.011, -0.20, 0.08);
                     glTexCoord2f(1, 0);
-                    glVertex3f(-0.011, -0.20, -0.08);
-                    glTexCoord2f(1, 1);
-                    glVertex3f(-0.011, -0.08, -0.08);
+                    glVertex3f(-0.011, -0.20, 0.08)
+                    glTexCoord2f(0, 0);
+                    glVertex3f(-0.011, -0.20, -0.08)
                     glTexCoord2f(0, 1);
+                    glVertex3f(-0.011, -0.08, -0.08)
+                    glTexCoord2f(1, 1);
                     glVertex3f(-0.011, -0.08, 0.08)
                 glEnd()
 
@@ -667,23 +689,26 @@ class F1Car:
             glPopMatrix()
 
     def draw_driver(self):
+        # --- Buraco do Cockpit
+        glColor3f(0.1, 0.1, 0.1)
+        glPushMatrix()
+        glTranslatef(0, 0.33, 0.20)
+        glRotatef(-4, 1, 0, 0)
+        # Tamanho
+        glScalef(0.24, 0.01, 0.55)
+        self.draw_box(1, 1, 1)
+        glPopMatrix()
         glColor3f(1.0, 0.85, 0.0);
         glPushMatrix();
         glTranslatef(0, 0.40, 0.3);
         self.draw_manual_sphere(0.13);
         glPopMatrix()
+
         # Viseira
         glColor3f(0.2, 0.2, 0.2);
         glPushMatrix();
         glTranslatef(0, 0.45, 0.35);
         glScalef(0.15, 0.07, 0.165);
-        self.draw_box(1, 1, 1);
-        glPopMatrix()
-        # Tronco
-        glColor3f(0.2, 0.2, 0.2);
-        glPushMatrix();
-        glTranslatef(0, 0.20, -0.05);
-        glScalef(0.15, 0.15, 0.2);
         self.draw_box(1, 1, 1);
         glPopMatrix()
 
@@ -723,7 +748,7 @@ class F1Car:
         for sign in [1, -1]:
             glPushMatrix()
             glScalef(sign, 1, 1)
-            self.draw_curved_sidepod()
+            self.draw_curved_sidepod(sign)
             self.draw_suspension()
             self.draw_new_mirrors()
             self.draw_detailed_wheel(0.88, 0.24, 1.1, True)
